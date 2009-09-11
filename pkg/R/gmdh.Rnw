@@ -1,0 +1,81 @@
+\documentclass{article}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian,english]{babel}
+\usepackage[noae]{Sweave}
+
+\begin{document}
+
+Задача состоит из трёх этапов:
+
+\begin{enumerate}
+\item порождение нового поколения моделей;
+\item сравнение моделей;
+\item отбор моделей для размножения.
+\end{enumerate}
+
+Займёмся, для начала, порождением:
+
+<<>>=
+X <- c("x1","x2","x3")
+appl <- function(f,x1,x2) cat(x1,f,x2)
+applp <- function(x1,x2) appl("*",x1,x2)
+#применяет функцию f с аргументом X1 ко всем элементам списка X.
+# фактически, попождает модели состоящие из X1 и всех моделей предыдущего цикла
+compose <- function(f,X,X1) mapply(function(x,y) paste(x,f,y),X,X1)
+# берёт два списка моделей и соединяет их, используя некую ф-ю
+# получается множество элементарных моделей, из которого получаются составные модели этого шага итерации
+gen <- function(f,Y,X) mapply(function(x) compose(f,Y,x),X)
+
+
+fxn <- function(x,n) {
+if (n == 0) x%%2
+else {
+x %/% 2^n * 10^n + fxn(x%%2^n,n-1)
+}
+}
+
+dec2bin <- function(x) fxn(x,floor(log2(x)))
+
+# берёт двоичное число и номер разряда. возвращает значение разряда 1 или 0
+razrjad <- function(x,n) round(10*(x/(10^n)-floor(x/(10^n))))
+
+#создать заполненную нулями матрицу нужной длинны
+getm <- function(n) matrix(0,nrow=1,ncol=n)
+
+add1n <- function(x,n,s){
+  lx <- x[1,n]
+  if(s + lx == 1){
+    x[1,n] <- 1
+    s <- 0
+  }
+  if(s+lx == 2){
+    x[1,n] <- 0
+    s <- 1
+  }
+  if(n==1) x
+  else add1n(x,n-1,s)
+}
+
+addone <- function(x) add1n(x,length(x),1)
+
+addmany <- function(x,n){
+  if (n == 0) x
+  else addmany(addone(x),n-1)
+}
+
+getcoeff <- function(x) lapply(1:2^length(x)-1,function(n) addmany(x,n))
+
+Xm <- c("x","y")
+g <- gen("*",Xm,Xm)
+m <- getm(4)
+c <- getcoeff(m)
+v <- lapply(1:16,function(k) (function(n) paste(c[k][[1]][n],"*",g[n]))(1:4))
+@
+
+
+lapply(1:16,function(k) (function(n) paste(c[k][[1]][n],"*",g[n]))(1:4))
+
+
+\end{document}

@@ -1,0 +1,9 @@
+Package: rgmdh
+Type: Package
+Title: group method of data handling
+Version: 0.0-1
+Date: 2009-09-11
+Author: ugoday <ugoday@gmail.com>
+Maintainer: ugoday <ugoday@gmail.com>
+Description: group method of data handling
+License: GPL (>=2)
