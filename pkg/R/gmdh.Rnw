@@ -19,27 +19,12 @@
 
 <<>>=
 X <- c("x1","x2","x3")
-appl <- function(f,x1,x2) cat(x1,f,x2)
-applp <- function(x1,x2) appl("*",x1,x2)
 #применяет функцию f с аргументом X1 ко всем элементам списка X.
 # фактически, попождает модели состоящие из X1 и всех моделей предыдущего цикла
 compose <- function(f,X,X1) mapply(function(x,y) paste(x,f,y),X,X1)
 # берёт два списка моделей и соединяет их, используя некую ф-ю
 # получается множество элементарных моделей, из которого получаются составные модели этого шага итерации
 gen <- function(f,Y,X) mapply(function(x) compose(f,Y,x),X)
-
-
-fxn <- function(x,n) {
-if (n == 0) x%%2
-else {
-x %/% 2^n * 10^n + fxn(x%%2^n,n-1)
-}
-}
-
-dec2bin <- function(x) fxn(x,floor(log2(x)))
-
-# берёт двоичное число и номер разряда. возвращает значение разряда 1 или 0
-razrjad <- function(x,n) round(10*(x/(10^n)-floor(x/(10^n))))
 
 #создать заполненную нулями матрицу нужной длинны
 getm <- function(n) matrix(0,nrow=1,ncol=n)
